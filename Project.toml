@@ -14,7 +14,7 @@ YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
 BibInternal = "0.3.7"
-BibParser = "0.2.2"
+BibParser = "0.2.3"
 DataStructures = "0.18, 0.19"
 Dates = "1"
 FileIO = "1"
