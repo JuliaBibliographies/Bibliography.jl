@@ -43,6 +43,7 @@ using ReferenceTests
     rm("demo.bib")
     rm("demo_export.bib")
 
+    include("api.jl")
     include("sort_bibliography.jl")
     include("staticweb.jl")
     include("cff.jl")

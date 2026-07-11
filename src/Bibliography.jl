@@ -16,6 +16,7 @@ import FileIO
 export export_bibtex, import_bibtex
 export export_cff, import_cff
 export export_web, bibtex_to_web
+export bibliography_entries, filter_bibliography, read_bibliography, validate, write_bibliography
 export select
 export sort_bibliography!
 
@@ -24,6 +25,7 @@ include("sort_bibliography.jl")
 include("bibtex.jl")
 include("cff.jl")
 include("csl.jl")
+include("api.jl")
 include("staticweb.jl")
 include("fileio.jl")
 
