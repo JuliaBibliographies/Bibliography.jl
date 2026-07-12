@@ -4,7 +4,11 @@
         selection::Vector{String};
         complementary::Bool = false
         )
-Select a part of a bibliography based on a given selection set of keys. If complementary is true, selection designates which entries will not be kept. By default, complementary is set to false.
+
+Select a subset of bibliography entries by key.
+
+If `complementary` is `true`, the keys in `selection` are excluded instead of
+kept.
 """
 function select(
         bibliography::DataStructures.OrderedDict{String, Entry},
