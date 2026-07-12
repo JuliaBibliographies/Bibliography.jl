@@ -213,7 +213,7 @@ end
 """
     Publication
 
-A structure to store all the information necessary to web export.
+A structure to store all the information necessary for web export.
 """
 struct Publication
     id::String
@@ -232,7 +232,7 @@ end
 """
     Publication(entry)
 
-Construct a `Publication` (compatible with web export) from an `Entry`.
+Construct a `Publication` compatible with the StaticWebPages web export.
 """
 function Publication(entry)
     id = entry.id
@@ -252,7 +252,10 @@ end
 
 """
     export_web(bibliography::DataStructures.OrderedDict{String,BibInternal.Entry})
-Export a bibliography in internal format to the web format of the [StaticWebPages.jl](https://github.com/Humans-of-Julia/StaticWebPages.jl) package. Also used by [DocumenterCitations.jl](https://github.com/ali-ramadhan/DocumenterCitations.jl).
+
+Export a bibliography in internal format to the web format used by
+`StaticWebPages.jl`. The same representation is also used by
+`DocumenterCitations.jl`.
 """
 function export_web(bibliography)
     entries = Vector{Publication}()

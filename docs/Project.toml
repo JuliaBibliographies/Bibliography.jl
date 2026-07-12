@@ -1,5 +1,5 @@
 [deps]
 BibInternal = "2027ae74-3657-4b95-ae00-e2f7d55c3e64"
 BibParser = "13533e5b-e1c2-4e57-8cef-cac5e52f6474"
+Bibliography = "f1be7e48-bf82-45af-a471-ae754a193061"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-

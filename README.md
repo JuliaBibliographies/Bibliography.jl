@@ -7,23 +7,31 @@
 
 # Bibliography.jl
 
-Bibliography.jl is a Julia package for handling both import/export from various bibliographic formats.
+Bibliography.jl is the high-level bibliography interface used by the Humans of
+Julia bibliography stack.
+
+It ties together `BibParser.jl` and `BibInternal.jl` and exposes convenient
+helpers for importing, validating, filtering, sorting, and exporting
+bibliographic data.
 
 ### Organization
 
 This package comes as a set of 3 packages to convert bibliographies. This tool was split into three for the sake of the precompilation times.
 - [Bibliography.jl](https://github.com/Humans-of-Julia/Bibliography.jl): The interface to import/export bibliographic items.
-- [BibInternal.jl](https://github.com/Humans-of-Julia/BibInternal.jl): A julian internal format to translate from and into.
+- [BibInternal.jl](https://github.com/Humans-of-Julia/BibInternal.jl): A Julia internal format to translate from and into.
 - [BibParser.jl](https://github.com/Humans-of-Julia/BibParser.jl): A container for different bibliographic format parsers (such as BibTeX).
 
-### Packages using Bibliographies
+The dedicated documentation site will eventually gather these packages in one
+place, but each package keeps its own reference docs for now.
 
-- [StaticWebPages.jl]((https://github.com/Humans-of-Julia/StaticWebPages.jl)): a black-box generator for static websites oriented towards personal and/or academic pages. No knowledge of Julia nor any other programming language is required.
+### Packages using Bibliography
+
+- [StaticWebPages.jl](https://github.com/Humans-of-Julia/StaticWebPages.jl): a black-box generator for static websites oriented towards personal and/or academic pages. No knowledge of Julia nor any other programming language is required.
 
 ### Contributions are welcome
-- Write new or integrate existing parsers to [BibParser.jl]((https://github.com/Humans-of-Julia/BibParser.jl)) (currently only a light BibTeX parser is available).
-- Add import/export from existing bibliographic formats to [Bibliography.jl]((https://github.com/Humans-of-Julia/Bibliography.jl)).
-- Add export for non-bibliographic formats (such as in [StaticWebPages.jl]((https://github.com/Humans-of-Julia/StaticWebPages.jl))).
+- Write new or integrate existing parsers to [BibParser.jl](https://github.com/Humans-of-Julia/BibParser.jl).
+- Add import/export from existing bibliographic formats to [Bibliography.jl](https://github.com/Humans-of-Julia/Bibliography.jl).
+- Add export for non-bibliographic formats (such as in [StaticWebPages.jl](https://github.com/Humans-of-Julia/StaticWebPages.jl)).
 
 ## Short documentation 
 

@@ -98,6 +98,12 @@ function cff_dict(e::Entry; version::String = "1.2.0", add_preferred::Bool = tru
     return cff
 end
 
+"""
+    export_cff(e::Entry; destination::String = "CITATION.cff",
+               version::String = "1.2.0", add_preferred::Bool = true)
+
+Export an `Entry` to a CFF file and return the generated dictionary.
+"""
 function export_cff(e::Entry; destination::String = "CITATION.cff",
         version::String = "1.2.0", add_preferred::Bool = true)
     cff = cff_dict(e; version, add_preferred)

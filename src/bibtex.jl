@@ -183,6 +183,11 @@ function export_bibtex(bibliography)
     return str[1:(end - 1)]
 end
 
+"""
+    export_biblatex(bibliography)
+
+Export a bibliography to BibLaTeX format.
+"""
 function export_biblatex(bibliography)
     return join((export_biblatex(entry) for entry in values(bibliography)), "\n\n")
 end

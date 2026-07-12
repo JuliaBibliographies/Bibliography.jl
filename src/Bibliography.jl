@@ -1,3 +1,10 @@
+"""
+Bibliography is the high-level bibliography interface for the Humans of Julia
+stack.
+
+It combines `BibParser.jl` and `BibInternal.jl` into a single package that can
+import, validate, filter, sort, and export bibliographic data.
+"""
 module Bibliography
 
 # BibInternal
@@ -35,10 +42,30 @@ include("api.jl")
 include("staticweb.jl")
 include("fileio.jl")
 
+"""
+    export_csl(args...)
+
+Placeholder for the CSL writer extension. Install the corresponding extension
+package to enable it.
+"""
 export_csl(args...) = throw(ArgumentError("The CSL writer extension is not loaded."))
+
+"""
+    export_endnote(args...)
+
+Placeholder for the EndNote writer extension. Install the corresponding
+extension package to enable it.
+"""
 function export_endnote(args...)
     throw(ArgumentError("The EndNote writer extension is not loaded."))
 end
+
+"""
+    export_mods(args...)
+
+Placeholder for the MODS writer extension. Install the corresponding extension
+package to enable it.
+"""
 export_mods(args...) = throw(ArgumentError("The MODS writer extension is not loaded."))
 
 """
