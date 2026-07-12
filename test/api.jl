@@ -24,7 +24,7 @@
     @test collect(keys(entries)) == ["z", "a"]
     @test entries["a"].title == "First"
 
-    @test validate(document).ok
+    @test Bibliography.validate(document).ok
     @test write_bibliography(document; mode = :original) == bib
     normalized = write_bibliography(document)
     @test occursin("@article{z", normalized)
@@ -50,15 +50,30 @@
     end
 end
 
+@testset "legacy BibTeX import is permissive by default" begin
+    loose = """
+    @inproceedings{loose,
+      author = {Doe, Jane},
+      title = {Proceedings-like Entry},
+      year = {2024}
+    }
+    """
+    imported = import_bibtex(loose)
+    @test haskey(imported, "loose")
+    @test imported["loose"].title == "Proceedings-like Entry"
+    @test_throws "missing the booktitle" import_bibtex(loose; check = :error)
+end
+
 @testset "format-agnostic BibLaTeX validation" begin
     biblatex = """
     @online{dataset,
+      author = {Doe, Jane},
       title = {Dataset},
       date = {2024-03-15},
       url = {https://example.test/data}
     }
     """
     document = read_bibliography(biblatex; format = :BibLaTeX)
-    @test validate(document).ok
+    @test Bibliography.validate(document).ok
     @test bibliography_entries(document)["dataset"].date.year == "2024"
 end

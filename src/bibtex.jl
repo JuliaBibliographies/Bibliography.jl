@@ -1,9 +1,9 @@
 """
-    import_bibtex(input; check = :error)
+    import_bibtex(input; check = :none)
 Import a BibTeX file or parse a BibTeX string and convert it to the internal bibliography format.
 The `check` keyword argument can be set to `:none` (or `nothing`), `:warn`, or `:error` to raise appropriate logs.
 """
-function import_bibtex(input; check = :error)
+function import_bibtex(input; check = :none)
     return isfile(input) ? BibParser.parse_file(input; check) :
            BibParser.parse_entry(input; check)
 end
@@ -122,24 +122,52 @@ end
 Export an `Entry` to a BibTeX string.
 """
 function export_bibtex(e::Entry)
-    access_to_bibtex!(e.fields, e.access)
-    e.fields["author"] = names_to_strings(e.authors)
-    e.fields["booktitle"] = e.booktitle
-    date_to_bibtex!(e.fields, e.date)
-    e.fields["editor"] = names_to_strings(e.editors)
-    eprint_to_bibtex!(e.fields, e.eprint)
-    in_to_bibtex!(e.fields, e.in)
-    e.fields["note"] = e.note
-    e.fields["title"] = e.title
+    fields = copy(e.fields)
+    access_to_bibtex!(fields, e.access)
+    fields["author"] = names_to_strings(e.authors)
+    fields["booktitle"] = e.booktitle
+    date_to_bibtex!(fields, e.date)
+    fields["editor"] = names_to_strings(e.editors)
+    eprint_to_bibtex!(fields, e.eprint)
+    in_to_bibtex!(fields, e.in)
+    fields["note"] = e.note
+    fields["title"] = e.title
 
     str = "@$(e.type == "eprint" ? "misc" : e.type){$(e.id),\n"
-    for (name, value) in collect(e.fields)
+    for (name, value) in collect(fields)
         m = match(r"swp-", name)
         if m === nothing || m.offset > 1
             str *= value == "" ? "" : field_to_bibtex(name, value)
         end
     end
     return str[1:(end - 2)] * "\n}"
+end
+
+function export_biblatex(e::Entry)
+    fields = copy(e.fields)
+    fields["author"] = names_to_strings(e.authors)
+    fields["editor"] = names_to_strings(e.editors)
+    fields["title"] = e.title
+    fields["booktitle"] = e.booktitle
+    fields["date"] = join(filter(!isempty, [e.date.year, e.date.month, e.date.day]), "-")
+    fields["journaltitle"] = e.in.journal
+    fields["location"] = e.in.address
+    fields["publisher"] = e.in.publisher
+    fields["institution"] = e.in.institution
+    fields["pages"] = e.in.pages
+    fields["volume"] = e.in.volume
+    fields["number"] = e.in.number
+    fields["doi"] = e.access.doi
+    fields["url"] = e.access.url
+    fields["eprint"] = e.eprint.eprint
+    fields["eprinttype"] = e.eprint.archive_prefix
+    fields["eprintclass"] = e.eprint.primary_class
+    fields["note"] = e.note
+    foreach(key -> delete!(fields, key), ("day", "month", "year", "journal", "address"))
+    body = join((field_to_bibtex(name, value)
+    for (name, value) in fields if !isempty(value)))
+    isempty(body) && return "@$(e.type){$(e.id)}"
+    return "@$(e.type){$(e.id),\n" * body[1:(end - 2)] * "\n}"
 end
 
 """
@@ -153,4 +181,8 @@ function export_bibtex(bibliography)
         str *= export_bibtex(e) * "\n\n"
     end
     return str[1:(end - 1)]
+end
+
+function export_biblatex(bibliography)
+    return join((export_biblatex(entry) for entry in values(bibliography)), "\n\n")
 end

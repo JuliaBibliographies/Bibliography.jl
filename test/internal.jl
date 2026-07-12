@@ -48,4 +48,5 @@ using ReferenceTests
     include("staticweb.jl")
     include("cff.jl")
     include("test-fileio.jl")
+    include("formats.jl")
 end
