@@ -53,7 +53,8 @@ end
 function validate(bibliography::AbstractDict; ruleset = BibInternal.BIBTEX_RULESET)
     diagnostics = BibInternal.Diagnostic[]
     for entry in values(bibliography)
-        append!(diagnostics, BibInternal.validate(BibInternal.canonical(entry), ruleset).diagnostics)
+        append!(diagnostics,
+            BibInternal.validate(BibInternal.canonical(entry), ruleset).diagnostics)
     end
     return BibInternal.ValidationResult(diagnostics)
 end
@@ -66,16 +67,27 @@ Write or return a bibliography string. With `mode = :original` or
 available. With `mode = :normalized`, entries are emitted from the canonical
 view.
 """
-function write_bibliography(bibliography; format::Symbol = :BibTeX, mode::Symbol = :normalized)
+function write_bibliography(
+        bibliography; format::Symbol = :BibTeX, mode::Symbol = :normalized)
     if mode in (:original, :preserved) &&
-            bibliography isa BibliographyDocument &&
-            !isempty(bibliography.source)
+       bibliography isa BibliographyDocument &&
+       !isempty(bibliography.source)
         return bibliography.source
     end
-    mode == :normalized || throw(ArgumentError("Unsupported bibliography write mode: $mode"))
-    format in (:BibTeX, :BibLaTeX) ||
-        throw(ArgumentError("Normalized writing currently supports BibTeX/BibLaTeX output."))
-    return export_bibtex(bibliography_entries(bibliography))
+    mode == :normalized ||
+        throw(ArgumentError("Unsupported bibliography write mode: $mode"))
+    return _write_normalized(Val(format), bibliography_entries(bibliography))
+end
+
+_write_normalized(::Val{:BibTeX}, bibliography) = export_bibtex(bibliography)
+_write_normalized(::Val{:BibLaTeX}, bibliography) = export_biblatex(bibliography)
+function _write_normalized(::Val{:CFF}, bibliography)
+    YAML.write(cff_dict(only(values(bibliography))))
+end
+_write_normalized(::Val{:RIS}, bibliography) = export_ris(bibliography)
+
+function _write_normalized(::Val{format}, bibliography) where {format}
+    throw(ArgumentError("The $format writer extension is not loaded."))
 end
 
 function write_bibliography(target::AbstractString, bibliography; kwargs...)
@@ -99,7 +111,7 @@ function filter_bibliography(document::BibliographyDocument, predicate::Function
         blocks = document.blocks,
         diagnostics = document.diagnostics,
         source = document.source,
-        metadata = document.metadata,
+        metadata = document.metadata
     )
 end
 
@@ -112,11 +124,13 @@ function filter_bibliography(bibliography::AbstractDict, predicate::Function)
     return filtered
 end
 
-filter_bibliography(predicate::Function, document::BibliographyDocument) =
+function filter_bibliography(predicate::Function, document::BibliographyDocument)
     filter_bibliography(document, predicate)
+end
 
-filter_bibliography(predicate::Function, bibliography::AbstractDict) =
+function filter_bibliography(predicate::Function, bibliography::AbstractDict)
     filter_bibliography(bibliography, predicate)
+end
 
 function select(
         document::BibliographyDocument,
