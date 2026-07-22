@@ -6,8 +6,8 @@ Use it when you want a simple API for common operations:
   MODS;
 - validate or filter a bibliography document;
 - sort entries;
-- export to BibTeX, BibLaTeX, RIS, CFF, CSL-JSON, or the StaticWebPages web
-  format.
+- export to BibTeX, BibLaTeX, RIS, CFF, CSL-JSON, EndNote, MODS, or a
+  lightweight web projection.
 
 ```julia
 using Bibliography

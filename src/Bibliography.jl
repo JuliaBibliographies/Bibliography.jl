@@ -39,7 +39,7 @@ include("cff.jl")
 include("csl.jl")
 include("ris.jl")
 include("api.jl")
-include("staticweb.jl")
+include("web.jl")
 include("fileio.jl")
 
 """
@@ -84,7 +84,8 @@ end
 
 """
     bibtex_to_web(source::String)
-Convert a BibTeX file to a web compatible format, specifically for the [StaticWebPages.jl](https://github.com/Humans-of-Julia/StaticWebPages.jl) package.
+Convert a BibTeX file to the lightweight web projection returned by
+[`export_web`](@ref).
 """
 bibtex_to_web(source) = export_web(import_bibtex(source))
 
