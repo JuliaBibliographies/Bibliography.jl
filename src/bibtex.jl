@@ -26,9 +26,8 @@ Convert an entry field to BibTeX format.
 """
 function field_to_bibtex(key, value)
     space = get(spaces, key, int_to_spaces(BibInternal.space(Symbol(key))))
-    swp = length(key) > 3 && key[1:3] == "swp"
     o, f = isnothing(match(r"@", value)) ? ('{', '}') : ('"', '"')
-    return value == "" || swp ? "" : " $key$space = $o$value$f,\n"
+    return value == "" ? "" : " $key$space = $o$value$f,\n"
 end
 
 """
@@ -134,10 +133,7 @@ function export_bibtex(e::Entry)
 
     str = "@$(e.type == "eprint" ? "misc" : e.type){$(e.id),\n"
     for (name, value) in collect(e.fields)
-        m = match(r"swp-", name)
-        if m === nothing || m.offset > 1
-            str *= value == "" ? "" : field_to_bibtex(name, value)
-        end
+        str *= value == "" ? "" : field_to_bibtex(name, value)
     end
     return str[1:(end - 2)] * "\n}"
 end

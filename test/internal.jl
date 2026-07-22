@@ -40,6 +40,28 @@ using ReferenceTests
     Bibliography.export_bibtex("demo_export.bib", mybib)
     mybib2 = Bibliography.import_bibtex("demo_export.bib")
 
+    custom = """@article{custom2026,
+    author = {Doe, Jane},
+    title = {Preserved metadata},
+    journal = {Journal of Metadata},
+    year = {2026},
+    swp-labels = {Julia, optimization},
+    institution-color = {navy-gold},
+    custom-project-id = {project-42}
+    }"""
+    custom_bib = Bibliography.import_bibtex(custom)
+    custom_export = Bibliography.export_bibtex(custom_bib)
+    @test occursin("swp-labels", custom_export)
+    @test occursin("institution-color", custom_export)
+    @test occursin("custom-project-id", custom_export)
+    custom_roundtrip = Bibliography.import_bibtex(custom_export)
+    @test custom_roundtrip["custom2026"].fields["swp-labels"] ==
+          "Julia, optimization"
+    @test custom_roundtrip["custom2026"].fields["institution-color"] ==
+          "navy-gold"
+    @test custom_roundtrip["custom2026"].fields["custom-project-id"] ==
+          "project-42"
+
     rm("demo.bib")
     rm("demo_export.bib")
 
