@@ -65,6 +65,22 @@ using ReferenceTests
     rm("demo.bib")
     rm("demo_export.bib")
 
+    canonical_labels = Bibliography.export_web(Bibliography.import_bibtex("""
+    @misc{canonical, title={Canonical labels}, labels={Julia, Research software},
+      keywords={ignored keyword}, swp-labels={ignored legacy label}}
+    """))
+    @test only(canonical_labels).labels == ["Julia", "Research software"]
+
+    keyword_labels = Bibliography.export_web(Bibliography.import_bibtex("""
+    @misc{keywords, title={Keyword fallback}, keywords={Julia, Optimization}}
+    """))
+    @test only(keyword_labels).labels == ["Julia", "Optimization"]
+
+    legacy_labels = Bibliography.export_web(Bibliography.import_bibtex("""
+    @misc{legacy, title={Legacy fallback}, swp-labels={Julia, Web}}
+    """))
+    @test only(legacy_labels).labels == ["Julia", "Web"]
+
     include("api.jl")
     include("sort_bibliography.jl")
     include("staticweb.jl")

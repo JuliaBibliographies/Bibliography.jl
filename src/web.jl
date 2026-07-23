@@ -200,9 +200,12 @@ xcite(entry) = string(entry)
 Format the labels of an `Entry` for web export.
 """
 function xlabels(entry)
-    str = get(entry.fields, "swp-labels", "")
+    str = get(entry.fields, "labels", "")
     if isempty(str)
-        str = get(entry.fields, "labels", "")
+        str = get(entry.fields, "keywords", "")
+    end
+    if isempty(str)
+        str = get(entry.fields, "swp-labels", "")
     end
     if isempty(str)
         return [entry.type]
