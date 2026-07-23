@@ -29,6 +29,7 @@ export export_cff, import_cff, export_cff_collection, import_cff_collection
 export export_web, bibtex_to_web
 export bibliography_entries, filter_bibliography, read_bibliography, validate,
        write_bibliography
+export rule_profile, compose_rule_profiles
 export select
 export sort_bibliography!
 
@@ -38,6 +39,7 @@ include("bibtex.jl")
 include("cff.jl")
 include("csl.jl")
 include("ris.jl")
+include("profiles.jl")
 include("api.jl")
 include("web.jl")
 include("fileio.jl")

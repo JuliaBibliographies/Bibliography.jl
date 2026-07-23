@@ -77,3 +77,47 @@ end
     @test Bibliography.validate(document).ok
     @test bibliography_entries(document)["dataset"].date.year == "2024"
 end
+
+@testset "format and product rule profiles compose" begin
+    lazyweb = BibInternal.RuleProfile(
+        name=:LazyWeb,
+        global_rules=[BibInternal.RequiredField("labels")],
+        global_fields=Set(["labels"]),
+    )
+    profile = Bibliography.compose_rule_profiles(
+        :BibTeX,
+        lazyweb;
+        name=:LazyWebBibTeX,
+    )
+    @test isempty(profile.diagnostics)
+    @test "labels" in BibInternal.profile_field_names(profile, "article")
+
+    source = """
+    @article{demo,
+      author = {Doe, Jane},
+      title = {A result},
+      journal = {Journal},
+      year = {2026}
+    }
+    """
+    document = Bibliography.read_bibliography(source)
+    result = Bibliography.validate(document; profile)
+    @test !result.ok
+    @test any(
+        diagnostic ->
+            diagnostic.code == :missing_required_field &&
+            diagnostic.field == "labels",
+        result.diagnostics,
+    )
+
+    cff = Bibliography.rule_profile(:CFF)
+    @test any(
+        rule -> rule isa BibInternal.RequiredField && rule.name == "title",
+        cff.global_rules,
+    )
+    @test_throws ArgumentError Bibliography.validate(
+        document;
+        profile,
+        ruleset=BibInternal.BIBTEX_RULESET,
+    )
+end

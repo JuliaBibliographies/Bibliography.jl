@@ -35,26 +35,49 @@ function bibliography_entries(entries::AbstractVector{<:BibInternal.AbstractEntr
     return bibliography
 end
 
-function _ruleset(format::Symbol)
-    format == :BibLaTeX && return BibInternal.BIBLATEX_RULESET
-    return BibInternal.BIBTEX_RULESET
-end
-
 """
-    validate(bibliography; ruleset)
+    validate(bibliography; ruleset=nothing, profile=nothing)
 
 Validate a bibliography document or collection of entries and return a
-`BibInternal.ValidationResult`.
+`BibInternal.ValidationResult`. With neither keyword, a document uses its
+format profile. `ruleset` remains available for compatibility; new consumers
+should use composable `profile` values.
 """
-function validate(document::BibliographyDocument; ruleset = _ruleset(document.format))
-    return BibInternal.validate(document, ruleset)
+function validate(
+    document::BibliographyDocument;
+    ruleset=nothing,
+    profile=nothing,
+)
+    !isnothing(ruleset) && !isnothing(profile) &&
+        throw(ArgumentError("Select either ruleset or profile, not both"))
+    selected = if !isnothing(profile)
+        profile
+    elseif !isnothing(ruleset)
+        ruleset
+    else
+        rule_profile(document.format)
+    end
+    return BibInternal.validate(document, selected)
 end
 
-function validate(bibliography::AbstractDict; ruleset = BibInternal.BIBTEX_RULESET)
+function validate(
+    bibliography::AbstractDict;
+    ruleset=nothing,
+    profile=nothing,
+)
+    !isnothing(ruleset) && !isnothing(profile) &&
+        throw(ArgumentError("Select either ruleset or profile, not both"))
+    selected = if !isnothing(profile)
+        profile
+    elseif !isnothing(ruleset)
+        ruleset
+    else
+        BibInternal.BIBTEX_PROFILE
+    end
     diagnostics = BibInternal.Diagnostic[]
     for entry in values(bibliography)
         append!(diagnostics,
-            BibInternal.validate(BibInternal.canonical(entry), ruleset).diagnostics)
+            BibInternal.validate(BibInternal.canonical(entry), selected).diagnostics)
     end
     return BibInternal.ValidationResult(diagnostics)
 end
