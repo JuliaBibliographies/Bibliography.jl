@@ -79,15 +79,15 @@ end
 end
 
 @testset "format and product rule profiles compose" begin
-    lazyweb = BibInternal.RuleProfile(
-        name=:LazyWeb,
+    catalogue = BibInternal.RuleProfile(
+        name=:CuratedCatalogue,
         global_rules=[BibInternal.RequiredField("labels")],
         global_fields=Set(["labels"]),
     )
     profile = Bibliography.compose_rule_profiles(
         :BibTeX,
-        lazyweb;
-        name=:LazyWebBibTeX,
+        catalogue;
+        name=:CuratedBibTeX,
     )
     @test isempty(profile.diagnostics)
     @test "labels" in BibInternal.profile_field_names(profile, "article")

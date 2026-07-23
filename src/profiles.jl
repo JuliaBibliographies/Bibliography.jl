@@ -43,6 +43,12 @@ function rule_profile(format::Symbol)
     return _FORMAT_RULE_PROFILES[format]
 end
 
+function _composed_profile_name(format::Symbol, overlays)
+    names = String[string(format)]
+    append!(names, string.(getproperty.(overlays, :name)))
+    return Symbol(join(names, "__"))
+end
+
 """
     compose_rule_profiles(format, overlays...; name)
 
@@ -52,9 +58,7 @@ overlays.
 function compose_rule_profiles(
     format::Symbol,
     overlays::BibInternal.RuleProfile...;
-    name::Symbol=Symbol(
-        join([string(format); string.(getproperty.(overlays, :name))], "__"),
-    ),
+    name::Symbol=_composed_profile_name(format, overlays),
 )
     BibInternal.compose_profiles(rule_profile(format), overlays...; name)
 end
