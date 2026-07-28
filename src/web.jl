@@ -200,9 +200,12 @@ xcite(entry) = string(entry)
 Format the labels of an `Entry` for web export.
 """
 function xlabels(entry)
-    str = get(entry.fields, "swp-labels", "")
+    str = get(entry.fields, "labels", "")
     if isempty(str)
-        str = get(entry.fields, "labels", "")
+        str = get(entry.fields, "keywords", "")
+    end
+    if isempty(str)
+        str = get(entry.fields, "swp-labels", "")
     end
     if isempty(str)
         return [entry.type]
@@ -213,7 +216,7 @@ end
 """
     Publication
 
-A structure to store all the information necessary to web export.
+A structure to store all the information necessary for web export.
 """
 struct Publication
     id::String
@@ -232,7 +235,7 @@ end
 """
     Publication(entry)
 
-Construct a `Publication` (compatible with web export) from an `Entry`.
+Construct a `Publication` for the lightweight web projection.
 """
 function Publication(entry)
     id = entry.id
@@ -252,7 +255,9 @@ end
 
 """
     export_web(bibliography::DataStructures.OrderedDict{String,BibInternal.Entry})
-Export a bibliography in internal format to the web format of the [StaticWebPages.jl](https://github.com/Humans-of-Julia/StaticWebPages.jl) package. Also used by [DocumenterCitations.jl](https://github.com/JuliaDocs/DocumenterCitations.jl).
+
+Export a bibliography in internal format to a lightweight web projection.
+The same representation is also used by `DocumenterCitations.jl`.
 """
 function export_web(bibliography)
     entries = Vector{Publication}()

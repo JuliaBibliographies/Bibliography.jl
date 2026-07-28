@@ -1,3 +1,10 @@
+"""
+Bibliography is the high-level bibliography interface for the Humans of Julia
+stack.
+
+It combines `BibParser.jl` and `BibInternal.jl` into a single package that can
+import, validate, filter, sort, and export bibliographic data.
+"""
 module Bibliography
 
 # BibInternal
@@ -6,16 +13,23 @@ import BibInternal: AbstractEntry, Entry
 
 # BibParser
 import BibParser
-import BibParser: BibTeX, CFF
+import BibParser: BibTeX
 
 # Others
 import DataStructures
 import DataStructures.OrderedSet
 import FileIO
+import JSONSchema
+import YAML
 
 export export_bibtex, import_bibtex
-export export_cff, import_cff
+export export_biblatex, export_ris
+export export_csl, export_endnote, export_mods
+export export_cff, import_cff, export_cff_collection, import_cff_collection
 export export_web, bibtex_to_web
+export bibliography_entries, filter_bibliography, read_bibliography, validate,
+       write_bibliography
+export rule_profile, compose_rule_profiles
 export select
 export sort_bibliography!
 
@@ -24,8 +38,37 @@ include("sort_bibliography.jl")
 include("bibtex.jl")
 include("cff.jl")
 include("csl.jl")
-include("staticweb.jl")
+include("ris.jl")
+include("profiles.jl")
+include("api.jl")
+include("web.jl")
 include("fileio.jl")
+
+"""
+    export_csl(args...)
+
+Placeholder for the CSL writer extension. Install the corresponding extension
+package to enable it.
+"""
+export_csl(args...) = throw(ArgumentError("The CSL writer extension is not loaded."))
+
+"""
+    export_endnote(args...)
+
+Placeholder for the EndNote writer extension. Install the corresponding
+extension package to enable it.
+"""
+function export_endnote(args...)
+    throw(ArgumentError("The EndNote writer extension is not loaded."))
+end
+
+"""
+    export_mods(args...)
+
+Placeholder for the MODS writer extension. Install the corresponding extension
+package to enable it.
+"""
+export_mods(args...) = throw(ArgumentError("The MODS writer extension is not loaded."))
 
 """
     export_bibtex(target, bibliography)
@@ -43,7 +86,8 @@ end
 
 """
     bibtex_to_web(source::String)
-Convert a BibTeX file to a web compatible format, specifically for the [StaticWebPages.jl](https://github.com/Humans-of-Julia/StaticWebPages.jl) package.
+Convert a BibTeX file to the lightweight web projection returned by
+[`export_web`](@ref).
 """
 bibtex_to_web(source) = export_web(import_bibtex(source))
 
