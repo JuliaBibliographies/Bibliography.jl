@@ -52,7 +52,7 @@ end
         @misc{undated, title={Undated software}, author={Doe, Jane}}
         """)))
     destination = tempname() * ".cff"
-    exported = Bibliography.export_cff(entry; destination, add_preferred=false)
+    exported = Bibliography.export_cff(entry; destination, add_preferred = false)
     @test !haskey(exported, "date-released")
     @test isfile(destination)
 end

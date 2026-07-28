@@ -8,8 +8,8 @@ Import a CFF file and convert it to the internal bibliography format.
 When no identifier is supplied, a deterministic internal identifier is derived
 from the CFF title and release year. CFF itself has no citation-key field.
 """
-function import_cff(input; id::AbstractString="")
-    content = YAML.load_file(input; dicttype=Dict{String,Any})
+function import_cff(input; id::AbstractString = "")
+    content = YAML.load_file(input; dicttype = Dict{String, Any})
     identifier = isempty(id) ? cff_identifier(input) : String(id)
     # BibParser 0.2.x fails while generating an identifier for CFF records
     # without a DOI. Supplying a deterministic identifier also makes repeated
@@ -20,22 +20,28 @@ function import_cff(input; id::AbstractString="")
 end
 
 function parse_cff_entry(input, content::AbstractDict, identifier::AbstractString)
-    haskey(content, "preferred-citation") &&
-        return BibParser.CFF.parse_file(input; id=identifier)
+    if haskey(content, "preferred-citation")
+        parsed, valid = BibParser.parse_file(input, :CFF)
+        valid || return parsed, valid
+        return Entry(parsed.access, parsed.authors, parsed.booktitle, parsed.date,
+            parsed.editors, parsed.eprint, identifier, parsed.in, parsed.fields,
+            parsed.note, parsed.title, parsed.type),
+        valid
+    end
 
     # BibParser 0.2.x validates a root-only CFF correctly, then assumes a
     # reference `type` that the CFF root schema does not define. Parse through
     # a temporary, schema-valid preferred citation while leaving the source
     # document untouched.
     synthesized = deepcopy(content)
-    citation = Dict{String,Any}(
+    citation = Dict{String, Any}(
         "authors" => deepcopy(content["authors"]),
         "title" => content["title"],
-        "type" => "software",
+        "type" => "software"
     )
     for field in (
         "abstract", "date-released", "doi", "identifiers", "repository-code",
-        "url",
+        "url"
     )
         haskey(content, field) && (citation[field] = deepcopy(content[field]))
     end
@@ -43,14 +49,19 @@ function parse_cff_entry(input, content::AbstractDict, identifier::AbstractStrin
     temporary = tempname() * ".cff"
     try
         YAML.write_file(temporary, synthesized)
-        return BibParser.CFF.parse_file(temporary; id=identifier)
+        parsed, valid = BibParser.parse_file(temporary, :CFF)
+        valid || return parsed, valid
+        return Entry(parsed.access, parsed.authors, parsed.booktitle, parsed.date,
+            parsed.editors, parsed.eprint, identifier, parsed.in, parsed.fields,
+            parsed.note, parsed.title, parsed.type),
+        valid
     finally
-        isfile(temporary) && rm(temporary; force=true)
+        isfile(temporary) && rm(temporary; force = true)
     end
 end
 
 function cff_identifier(input)
-    content = YAML.load_file(input; dicttype=Dict{String,Any})
+    content = YAML.load_file(input; dicttype = Dict{String, Any})
     citation = get(content, "preferred-citation", content)
     title = strip(string(get(citation, "title", get(content, "title", "citation"))))
     date = string(get(citation, "date-released", get(content, "date-released", "")))

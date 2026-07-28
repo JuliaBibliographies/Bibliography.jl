@@ -134,10 +134,7 @@ function export_bibtex(e::Entry)
 
     str = "@$(e.type == "eprint" ? "misc" : e.type){$(e.id),\n"
     for (name, value) in collect(fields)
-        m = match(r"swp-", name)
-        if m === nothing || m.offset > 1
-            str *= value == "" ? "" : field_to_bibtex(name, value)
-        end
+        str *= value == "" ? "" : field_to_bibtex(name, value)
     end
     return str[1:(end - 2)] * "\n}"
 end
