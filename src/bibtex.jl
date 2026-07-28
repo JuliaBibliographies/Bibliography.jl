@@ -4,6 +4,19 @@ Import a BibTeX file or parse a BibTeX string and convert it to the internal bib
 The `check` keyword argument can be set to `:none` (or `nothing`), `:warn`, or `:error` to raise appropriate logs.
 """
 function import_bibtex(input; check = :none)
+    if input isa AbstractString
+        source = String(input)
+        occursin('\n', source) && return BibParser.parse_entry(source; check)
+        try
+            return isfile(source) ? BibParser.parse_file(source; check) :
+                   BibParser.parse_entry(source; check)
+        catch error
+            if error isa Base.IOError
+                return BibParser.parse_entry(source; check)
+            end
+            rethrow()
+        end
+    end
     return isfile(input) ? BibParser.parse_file(input; check) :
            BibParser.parse_entry(input; check)
 end

@@ -1,10 +1,3 @@
-import Pkg
-Pkg.develop([
-    Pkg.PackageSpec(path = joinpath(@__DIR__, "..", "..", "BibInternal")),
-    Pkg.PackageSpec(path = joinpath(@__DIR__, "..", "..", "BibParser")),
-    Pkg.PackageSpec(path = joinpath(@__DIR__, ".."))
-])
-Pkg.instantiate()
 using Documenter, Bibliography, BibParser, BibInternal
 
 makedocs(
