@@ -44,9 +44,9 @@ format profile. `ruleset` remains available for compatibility; new consumers
 should use composable `profile` values.
 """
 function validate(
-    document::BibliographyDocument;
-    ruleset=nothing,
-    profile=nothing,
+        document::BibliographyDocument;
+        ruleset = nothing,
+        profile = nothing
 )
     !isnothing(ruleset) && !isnothing(profile) &&
         throw(ArgumentError("Select either ruleset or profile, not both"))
@@ -61,9 +61,9 @@ function validate(
 end
 
 function validate(
-    bibliography::AbstractDict;
-    ruleset=nothing,
-    profile=nothing,
+        bibliography::AbstractDict;
+        ruleset = nothing,
+        profile = nothing
 )
     !isnothing(ruleset) && !isnothing(profile) &&
         throw(ArgumentError("Select either ruleset or profile, not both"))

@@ -1,18 +1,18 @@
 const _CANONICAL_FIELDS = Set(keys(BibInternal.CANONICAL_FIELD_SPECS))
 
 function _exchange_profile(
-    name::Symbol;
-    rules=BibInternal.AbstractBibliographyRule[],
+        name::Symbol;
+        rules = BibInternal.AbstractBibliographyRule[]
 )
     BibInternal.RuleProfile(
-        name=name,
-        version=v"1.0.0",
-        global_rules=rules,
-        global_fields=_CANONICAL_FIELDS,
+        name = name,
+        version = v"1.0.0",
+        global_rules = rules,
+        global_fields = _CANONICAL_FIELDS
     )
 end
 
-const _FORMAT_RULE_PROFILES = Dict{Symbol,BibInternal.RuleProfile}(
+const _FORMAT_RULE_PROFILES = Dict{Symbol, BibInternal.RuleProfile}(
     :BibTeX => BibInternal.BIBTEX_PROFILE,
     :BibLaTeX => BibInternal.BIBLATEX_PROFILE,
     :CSL => _exchange_profile(:CSL),
@@ -21,12 +21,12 @@ const _FORMAT_RULE_PROFILES = Dict{Symbol,BibInternal.RuleProfile}(
     :MODS => _exchange_profile(:MODS),
     :CFF => _exchange_profile(
         :CFF;
-        rules=BibInternal.AbstractBibliographyRule[
+        rules = BibInternal.AbstractBibliographyRule[
             BibInternal.RequiredField("author"),
-            BibInternal.RequiredField("title"),
-        ],
+            BibInternal.RequiredField("title")
+        ]
     ),
-    :Web => _exchange_profile(:Web),
+    :Web => _exchange_profile(:Web)
 )
 
 """
@@ -56,9 +56,9 @@ Compose a destination format profile with product, project, or institution
 overlays.
 """
 function compose_rule_profiles(
-    format::Symbol,
-    overlays::BibInternal.RuleProfile...;
-    name::Symbol=_composed_profile_name(format, overlays),
+        format::Symbol,
+        overlays::BibInternal.RuleProfile...;
+        name::Symbol = _composed_profile_name(format, overlays)
 )
     BibInternal.compose_profiles(rule_profile(format), overlays...; name)
 end

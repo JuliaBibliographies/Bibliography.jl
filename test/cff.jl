@@ -13,7 +13,6 @@ using Bibliography
     end
 end
 
-
 @testset "CFF collection" begin
     source = """
     @book{hopper1952,

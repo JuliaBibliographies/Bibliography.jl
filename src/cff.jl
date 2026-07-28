@@ -71,7 +71,8 @@ entry id, making directory export/import round-trips preserve bibliography
 keys without adding non-standard fields to the CFF documents.
 """
 function import_cff_collection(source::AbstractString)
-    isdir(source) || throw(ArgumentError("CFF collection source is not a directory: $source"))
+    isdir(source) ||
+        throw(ArgumentError("CFF collection source is not a directory: $source"))
     inputs = sort!(filter(path -> lowercase(splitext(path)[2]) == ".cff",
         readdir(source; join = true)))
     return import_cff_collection(inputs)
