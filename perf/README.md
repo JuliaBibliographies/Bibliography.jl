@@ -34,8 +34,9 @@ julia --startup-file=no --project=perf perf/compatibility_smoke.jl
 
 Set `PERFCHECKER_PATH`, `BIBINTERNAL_PATH`, `BIBPARSER_PATH`, or
 `BIBLIOGRAPHY_PATH` to override the default sibling checkouts. JSON, Markdown,
-and JUnit reports are written below `perf/results/<profile>/` for local review
-and CI artifact collection.
+and JUnit reports plus a portable observation bundle are written below
+`perf/results/<profile>/` for local review, Oxygen browsing, and CI artifact
+collection.
 
 ## Interfaces
 
@@ -44,6 +45,9 @@ All interfaces stay in the controller and launch the same Malt-isolated runs:
 ```powershell
 # Oxygen API and job controller
 julia --startup-file=no --project=perf perf/serve.jl
+
+# Read-only Oxygen browser for already collected bundles
+julia --startup-file=no --project=perf perf/serve_results.jl
 
 # Makie dashboard; runs the selected profile before displaying it
 julia --startup-file=no --project=perf perf/dashboard_makie.jl
