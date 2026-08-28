@@ -1,16 +1,9 @@
-import Pkg
-
-Pkg.activate(@__DIR__)
-perfchecker = get(ENV, "PERFCHECKER_PATH",
-    normpath(joinpath(@__DIR__, "..", "..", "PerfChecker")))
-isdir(perfchecker) && Pkg.develop(path = perfchecker)
-Pkg.instantiate()
+include("bootstrap.jl")
 
 using BenchmarkTools
 using PerfChecker
-include("suite.jl")
 
 profile = isempty(ARGS) ? :quick : Symbol(first(ARGS))
-result = run_suite(bibliography_software_suite(); profile, strict = false)
-write_suite_reports(result, joinpath(@__DIR__, "results", string(profile)))
+result = run_suite_file(joinpath(@__DIR__, "entrypoint.jl"); profile,
+    reports = joinpath(@__DIR__, "results", string(profile)), strict = false)
 suite_passed(result) || throw(PerfChecker.SuiteRunError(result))

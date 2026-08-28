@@ -1,8 +1,16 @@
 [deps]
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
+DrWatson = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
+Oxygen = "df9a0d86-3283-4920-82dc-4555fc0d1d8b"
 PerfChecker = "6309bf6b-a531-4b08-891e-8ee981e5c424"
+Pluto = "c3e4b0f8-55cb-11ea-2926-15256bba5781"
 
 [compat]
 BenchmarkTools = "1"
+CairoMakie = "0.12, 0.13"
+DrWatson = "2"
+Oxygen = "1"
 PerfChecker = "0.2"
+Pluto = "0.20, 1"
 julia = "1.10"

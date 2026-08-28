@@ -1,0 +1,31 @@
+name: Performance suite
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  bibliography-suite:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          repository: Humans-of-Julia/BibInternal.jl
+          path: perf-deps/BibInternal
+      - uses: actions/checkout@v7
+        with:
+          repository: Humans-of-Julia/BibParser.jl
+          path: perf-deps/BibParser
+      - uses: JuliaConstraints/PerfChecker.jl@main
+        env:
+          BIBINTERNAL_PATH: ${{ github.workspace }}/perf-deps/BibInternal
+          BIBPARSER_PATH: ${{ github.workspace }}/perf-deps/BibParser
+          BIBLIOGRAPHY_PATH: ${{ github.workspace }}
+        with:
+          project: perf
+          suite: perf/entrypoint.jl
+          profile: ci
+          reports: perf/results/ci
