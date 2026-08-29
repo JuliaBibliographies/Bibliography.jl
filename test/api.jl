@@ -19,6 +19,7 @@
     @test document.format == :BibTeX
     @test document.source == bib
     @test length(document.entries) == 2
+    @test read_bibliography(bib, Val(:BibTeX)).source == bib
 
     entries = bibliography_entries(document)
     @test collect(keys(entries)) == ["z", "a"]
@@ -29,6 +30,7 @@
     normalized = write_bibliography(document)
     @test occursin("@article{z", normalized)
     @test occursin("title", normalized)
+    @test write_bibliography(document, Val(:BibTeX)) == normalized
 
     selected = select(document, ["a"])
     @test length(selected.entries) == 1

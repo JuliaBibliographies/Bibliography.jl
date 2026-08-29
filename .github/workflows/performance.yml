@@ -1,10 +1,11 @@
-name: Performance suite
+name: Performance contracts
+
 on:
   pull_request:
   workflow_dispatch:
 
 jobs:
-  bibliography-suite:
+  suite:
     runs-on: ubuntu-latest
     permissions:
       contents: read

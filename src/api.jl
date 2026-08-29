@@ -8,7 +8,12 @@ Read a bibliography from a path, stream, or string and return a lossless
 `BibInternal.BibliographyDocument`.
 """
 function read_bibliography(input; format::Symbol = :auto, check = :error)
-    return BibParser.parse_bibliography(input; format, check)
+    format === :auto && return BibParser.parse_bibliography(input; format, check)
+    return read_bibliography(input, Val(format); check)
+end
+
+function read_bibliography(input, format::Val; check = :error)
+    BibParser.parse_bibliography(input, format; check)
 end
 
 """
@@ -92,6 +97,26 @@ view.
 """
 function write_bibliography(
         bibliography; format::Symbol = :BibTeX, mode::Symbol = :normalized)
+    return write_bibliography(bibliography, Val(format); mode)
+end
+
+function write_bibliography(
+        bibliography::BibliographyDocument, format::Val; mode::Symbol = :normalized)
+    _write_bibliography(bibliography, format, mode)
+end
+
+function write_bibliography(
+        bibliography::AbstractDict, format::Val; mode::Symbol = :normalized)
+    _write_bibliography(bibliography, format, mode)
+end
+
+function write_bibliography(
+        bibliography::AbstractVector{<:BibInternal.AbstractEntry}, format::Val;
+        mode::Symbol = :normalized)
+    _write_bibliography(bibliography, format, mode)
+end
+
+function _write_bibliography(bibliography, format::Val, mode::Symbol)
     if mode in (:original, :preserved) &&
        bibliography isa BibliographyDocument &&
        !isempty(bibliography.source)
@@ -99,7 +124,7 @@ function write_bibliography(
     end
     mode == :normalized ||
         throw(ArgumentError("Unsupported bibliography write mode: $mode"))
-    return _write_normalized(Val(format), bibliography_entries(bibliography))
+    return _write_normalized(format, bibliography_entries(bibliography))
 end
 
 _write_normalized(::Val{:BibTeX}, bibliography) = export_bibtex(bibliography)

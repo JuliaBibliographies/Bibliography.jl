@@ -49,7 +49,7 @@ function bibliography_perf_suite(;
         bibinternal_source = normpath(joinpath(@__DIR__, "..", "..", "BibInternal")),
         bibparser_source = normpath(joinpath(@__DIR__, "..", "..", "BibParser")),
         environment = joinpath(@__DIR__, "runner"))
-    common = Dict(:samples => 20, :evals => 1, :seconds => 0.2)
+    common = Dict(:samples => 50, :evals => 1, :seconds => 0.5)
     benchmark_features = [
         FeatureSpec(:import_bibtex; description = "Import BibTeX into the public model",
             entrypoint = joinpath(@__DIR__, "features", "import_bibtex.jl"),
@@ -68,17 +68,22 @@ function bibliography_perf_suite(;
     allocation_options = Dict(
         :targets => ["Bibliography"], :track => "none", :repeat => true)
     allocation_features = [FeatureSpec(Symbol(feature.id, "_allocations");
-        description = "Attribute $(feature.id) allocations to source file and line",
-        backend = :profile_alloc, variants = feature.variants,
-        options = allocation_options)
-        for feature in benchmark_features]
+                               description = "Attribute $(feature.id) allocations to source file and line",
+                               backend = :profile_alloc, variants = feature.variants,
+                               options = allocation_options)
+                           for feature in benchmark_features]
     profile_options = Dict(:targets => ["Bibliography"], :track => "none",
         :repeat => true, :profile_seconds => 0.5, :profile_delay => 0.001)
     profile_features = [FeatureSpec(Symbol(feature.id, "_profile");
-        description = "Capture $(feature.id) CPU call stacks for flame graphs",
-        backend = :profile, variants = feature.variants, options = profile_options)
-        for feature in benchmark_features]
-    features = vcat(benchmark_features, allocation_features, profile_features)
+                            description = "Capture $(feature.id) CPU call stacks for flame graphs",
+                            backend = :profile, variants = feature.variants, options = profile_options)
+                        for feature in benchmark_features]
+    wall_profile_features = [FeatureSpec(Symbol(feature.id, "_wall_profile");
+                                 description = "Capture $(feature.id) task wall-time stacks",
+                                 backend = :wall_profile, variants = feature.variants, options = profile_options)
+                             for feature in benchmark_features]
+    features = vcat(benchmark_features, allocation_features, profile_features,
+        wall_profile_features)
     return PackageSuite("Bibliography"; source, environment, versions = :all,
         dev_sources = [bibinternal_source, bibparser_source],
         release_pins = bibliography_release_pins(), features)
