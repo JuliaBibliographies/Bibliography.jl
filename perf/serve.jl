@@ -2,6 +2,7 @@ include("bootstrap.jl")
 
 using Oxygen
 using PerfChecker
+using WGLMakie
 
 suite = load_software_suite(joinpath(@__DIR__, "entrypoint.jl"))
 profile = Symbol(get(ENV, "PERFCHECKER_PROFILE", "quick"))

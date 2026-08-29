@@ -62,6 +62,21 @@ julia --startup-file=no --project=perf perf/drwatson.jl
 julia --startup-file=no --project=perf -e 'using Pluto; Pluto.run(notebook="perf/dashboard.jl")'
 ```
 
+The Oxygen Studio embeds real WGLMakie figures. Its plot picker covers release
+trajectories, per-version distributions, regression deltas, time/allocation
+trade-offs, allocations grouped by source file, top `file:line` allocation
+sites, a version-by-line heatmap, allocation-share pie charts, and CPU or
+allocation flame graphs. The same plot grammar can be rendered in a
+local GLMakie window or exported with CairoMakie for CI artifacts.
+
+Each benchmark feature has a matching allocation feature. Those allocation
+runs use the same feature entrypoint and version window in a separate Malt
+worker using Julia's allocation profiler. The measured process still
+does not load PerfChecker, WGLMakie, Oxygen, Pluto, or DrWatson.
+Each benchmark feature also has a matching CPU-profile feature. It warms the
+workload, samples only the isolated worker with Julia's `Profile` standard
+library, and stores portable call stacks for the flame-graph view.
+
 Use `PERFCHECKER_PROFILE` to select `quick`, `ci`, or `historical` for the
 controller scripts. `perf/github-actions.yml` is the ready-to-copy CI workflow;
 move it to `.github/workflows/performance.yml` once the PerfChecker branch has

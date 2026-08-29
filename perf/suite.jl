@@ -50,7 +50,7 @@ function bibliography_perf_suite(;
         bibparser_source = normpath(joinpath(@__DIR__, "..", "..", "BibParser")),
         environment = joinpath(@__DIR__, "runner"))
     common = Dict(:samples => 20, :evals => 1, :seconds => 0.2)
-    features = [
+    benchmark_features = [
         FeatureSpec(:import_bibtex; description = "Import BibTeX into the public model",
             entrypoint = joinpath(@__DIR__, "features", "import_bibtex.jl"),
             comparison_key = "bibliography-import/v1", options = common),
@@ -65,6 +65,20 @@ function bibliography_perf_suite(;
             description = "Read and filter through the normalized document API",
             entrypoint = joinpath(@__DIR__, "features", "read_and_filter.jl"),
             since = v"0.4.0", comparison_key = "bibliography-query/v1", options = common)]
+    allocation_options = Dict(
+        :targets => ["Bibliography"], :track => "none", :repeat => true)
+    allocation_features = [FeatureSpec(Symbol(feature.id, "_allocations");
+        description = "Attribute $(feature.id) allocations to source file and line",
+        backend = :profile_alloc, variants = feature.variants,
+        options = allocation_options)
+        for feature in benchmark_features]
+    profile_options = Dict(:targets => ["Bibliography"], :track => "none",
+        :repeat => true, :profile_seconds => 0.5, :profile_delay => 0.001)
+    profile_features = [FeatureSpec(Symbol(feature.id, "_profile");
+        description = "Capture $(feature.id) CPU call stacks for flame graphs",
+        backend = :profile, variants = feature.variants, options = profile_options)
+        for feature in benchmark_features]
+    features = vcat(benchmark_features, allocation_features, profile_features)
     return PackageSuite("Bibliography"; source, environment, versions = :all,
         dev_sources = [bibinternal_source, bibparser_source],
         release_pins = bibliography_release_pins(), features)
