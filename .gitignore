@@ -6,3 +6,4 @@
 _git2_*
 
 *Manifest.toml
+/perf/results/
