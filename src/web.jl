@@ -261,6 +261,7 @@ The same representation is also used by `DocumenterCitations.jl`.
 """
 function export_web(bibliography)
     entries = Vector{Publication}()
+    sizehint!(entries, length(bibliography))
     for entry in values(bibliography)
         p = Publication(entry)
         push!(entries, p)

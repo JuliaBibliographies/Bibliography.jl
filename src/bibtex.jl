@@ -138,8 +138,9 @@ end
 
 Export an `Entry` to a BibTeX string.
 """
-function export_bibtex(e::Entry)
+function _write_bibtex(io::IO, e::Entry)
     fields = copy(e.fields)
+    sizehint!(fields, length(e.fields) + 32)
     access_to_bibtex!(fields, e.access)
     fields["author"] = names_to_strings(e.authors)
     fields["booktitle"] = e.booktitle
@@ -150,7 +151,6 @@ function export_bibtex(e::Entry)
     fields["note"] = e.note
     fields["title"] = e.title
 
-    io = IOBuffer()
     print(io, '@', e.type == "eprint" ? "misc" : e.type, '{', e.id)
     for (name, value) in fields
         isempty(value) && continue
@@ -162,6 +162,12 @@ function export_bibtex(e::Entry)
         print(io, ' ', name, space, " = ", open_char, value, close_char)
     end
     print(io, "\n}")
+    return io
+end
+
+function export_bibtex(e::Entry)
+    io = IOBuffer()
+    _write_bibtex(io, e)
     return String(take!(io))
 end
 
@@ -198,8 +204,15 @@ end
 Export a bibliography to a BibTeX string.
 """
 function export_bibtex(bibliography)
-    data = join((export_bibtex(entry) for entry in values(bibliography)), "\n\n")
-    return isempty(data) ? data : data * '\n'
+    io = IOBuffer()
+    first_entry = true
+    for entry in values(bibliography)
+        first_entry || print(io, "\n\n")
+        _write_bibtex(io, entry)
+        first_entry = false
+    end
+    first_entry || write(io, '\n')
+    return String(take!(io))
 end
 
 """
